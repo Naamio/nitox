@@ -299,7 +299,7 @@ fn can_request_timeout_10secs() {
     let fut = NatsClient::from_options(options)
         .and_then(|client| client.connect())
         .and_then(|client| {
-            client.request_with_timeout("foo2".into(), "foo".into(), Some(std::time::Duration::from_secs(10)))
+            client.request_with_timeout("foo2".into(), "foo".into(), std::time::Duration::from_secs(10))
         });
 
     let (tx, rx) = oneshot::channel();
