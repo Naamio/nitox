@@ -363,7 +363,7 @@ impl NatsClient {
     /// Performs a request to the server following the Request/Reply pattern. Returns a future containing the MSG that will be replied at some point by a third party
     ///
     /// Returns `impl Future<Item = Message, Error = NatsError>`
-    pub fn request_with_timeout(
+    fn internal_request(
         &self,
         subject: String,
         payload: Bytes,
@@ -442,6 +442,18 @@ impl NatsClient {
         subject: String,
         payload: Bytes,
     ) -> impl Future<Item = Message, Error = NatsError> + Send + Sync {
-        self.request_with_timeout(subject, payload, None)
+        self.internal_request(subject, payload, None)
+    }
+
+    /// Performs a request to the server following the Request/Reply pattern. Returns a future containing the MSG that will be replied at some point by a third party
+    /// Requires a timeout after which the request will be canceled and the `Future` will resolve
+    /// Returns `impl Future<Item = Message, Error = NatsError>`
+    pub fn request_with_timeout(
+        &self,
+        subject: String,
+        payload: Bytes,
+        timeout: std::time::Duration,
+    ) -> impl Future<Item = Message, Error = NatsError> + Send + Sync {
+        self.internal_request(subject, payload, Some(timeout))
     }
 }
